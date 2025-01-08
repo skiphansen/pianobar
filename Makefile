@@ -7,7 +7,12 @@ LIBDIR:=${PREFIX}/lib
 INCDIR:=${PREFIX}/include
 MANDIR:=${PREFIX}/share/man
 DYNLINK:=0
-CFLAGS?=-O2 -DNDEBUG
+
+ifeq ($(MAKECMDGOALS),debug)
+	CFLAGS?=-O0 -g -DDEBUG
+else
+	CFLAGS?=-O2 -DNDEBUG
+endif
 
 ifeq (${CC},cc)
 	OS := $(shell uname)
@@ -41,7 +46,8 @@ LIBPIANO_SRC:=\
 		${LIBPIANO_DIR}/piano.c \
 		${LIBPIANO_DIR}/request.c \
 		${LIBPIANO_DIR}/response.c \
-		${LIBPIANO_DIR}/list.c
+		${LIBPIANO_DIR}/list.c \
+		${LIBPIANO_DIR}/debug_log.c
 LIBPIANO_OBJ:=${LIBPIANO_SRC:.c=.o}
 LIBPIANO_RELOBJ:=${LIBPIANO_SRC:.c=.lo}
 LIBPIANO_INCLUDE:=${LIBPIANO_DIR}
@@ -127,6 +133,8 @@ clean:
 			libpiano.a $(PIANOBAR_SRC:.c=.d) $(LIBPIANO_SRC:.c=.d)
 
 all: pianobar
+
+debug: pianobar
 
 ifeq (${DYNLINK},1)
 install: pianobar install-libpiano
